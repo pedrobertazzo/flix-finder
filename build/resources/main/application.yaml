@@ -1,0 +1,6 @@
+openai:
+  apiKey: your_openai_api_key_here
+  model:
+
+server:
+  port: 8080
