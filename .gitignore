@@ -7,3 +7,5 @@ build/
 target/
 logs/
 .kotlin/
+.idea/
+src/main/resources/*-local.yaml

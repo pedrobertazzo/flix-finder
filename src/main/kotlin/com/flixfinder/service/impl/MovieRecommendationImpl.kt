@@ -1,28 +1,37 @@
 package com.flixfinder.service.impl
 
-import com.flixfinder.model.Movie
 import com.flixfinder.service.api.MovieRecommendationService
-import org.springframework.beans.factory.annotation.Value
+import dev.langchain4j.data.message.UserMessage
+import dev.langchain4j.model.chat.ChatLanguageModel
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
+
 
 
 @Service
 class MovieRecommendationImpl(
-    @Value("\${openai.apiKey}") private val apiKey: String,
-    private val webClientBuilder: WebClient.Builder,
+    private val chatLanguageModel: ChatLanguageModel
 ) : MovieRecommendationService {
 
-    private val client = webClientBuilder
-        .baseUrl("https://api.themoviedb.org/3")
-        .build()
+    override fun getMovieRecommendation(preferences: String, genres: List<String>): String {
+        val prompt = """
+            You are a movie recommendation assistant, suggest 3-5 movies based on the following user query:
+            "$preferences"
+            FOr the following genres: ${genres.joinToString(", ")}
+            
+            Present only the name of the movie, the year of release and the genre, no other information is needed.
+            
+            Separate each movie suggestion with a new line.
+        """.trimIndent()
 
-    override fun searchMovies(query: String): List<Movie> {
-        // TODO: get movies from external API.
-        return listOf()
-    };
+        val messages = listOf(
+            UserMessage(prompt)
+        )
 
-    override fun getMovieRecommendation(query: String): String {
-        TODO("Not yet implemented")
+        return try {
+            val response = chatLanguageModel.generate(messages)
+            response.content().text()
+        } catch (e: Exception) {
+            "Sorry, I couldn't generate movie recommendations at the moment. Please try again later."
+        }
     }
 }

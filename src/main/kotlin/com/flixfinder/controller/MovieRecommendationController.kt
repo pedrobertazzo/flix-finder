@@ -2,6 +2,8 @@ package com.flixfinder.controller
 
 import com.flixfinder.model.RecommendationRequest
 import com.flixfinder.model.RecommendationResponse
+import com.flixfinder.service.api.MovieRecommendationService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/movies")
 class MovieRecommendationController(
+    private val movieRecommendationService: MovieRecommendationService
 ) {
     @PostMapping("/recommend")
-    fun getRecommendations(@RequestBody request: RecommendationRequest): RecommendationResponse {
-        // Use LLM to generate personalized recommendations
-        val recommendations = "Watch everything!!!"
+    fun getRecommendations(@RequestBody request: RecommendationRequest): ResponseEntity<RecommendationResponse> {
+        val recommendations = movieRecommendationService.getMovieRecommendation(request.userPreferences, request.genres.map { it.name })
 
-        return RecommendationResponse(recommendations)
+        return ResponseEntity.ok().body(RecommendationResponse(recommendations))
     }
 }
