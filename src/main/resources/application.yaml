@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: local
+
+openai:
+  apiKey: dummy
+  model: gemini-2.0-flash-thinking-exp-01-21
+  baseUrl: https://generativelanguage.googleapis.com/v1beta/
+
+server:
+  port: 8000
