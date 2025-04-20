@@ -8,4 +8,4 @@ openai:
   baseUrl: https://generativelanguage.googleapis.com/v1beta/
 
 server:
-  port: 8000
+  port: 8080

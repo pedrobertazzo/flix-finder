@@ -19,7 +19,6 @@ class ClientConfig {
     @Value("\${openai.model}")
     private lateinit var openAiModel: String
 
-
     @Bean
     fun webClient(): WebClient.Builder {
         return WebClient.builder()

@@ -5,8 +5,6 @@ import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatLanguageModel
 import org.springframework.stereotype.Service
 
-
-
 @Service
 class MovieRecommendationImpl(
     private val chatLanguageModel: ChatLanguageModel
