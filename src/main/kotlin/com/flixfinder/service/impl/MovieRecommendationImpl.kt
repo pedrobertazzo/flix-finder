@@ -2,12 +2,11 @@ package com.flixfinder.service.impl
 
 import com.flixfinder.model.Genre
 import com.flixfinder.model.Movie
-import com.flixfinder.service.api.MovieRecommendationService
+import com.flixfinder.service.MovieRecommendationService
 import com.google.gson.JsonParser
 import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatLanguageModel
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException.BadRequest
 
 @Service
 class MovieRecommendationImpl(
@@ -31,6 +30,7 @@ class MovieRecommendationImpl(
             ]
             
             Provide nothing but this JSON array in your response.
+            The movie must exist; in case there is nothing that matches the preferences and genre, return an empty JSON array.'
         """.trimIndent()
 
         val messages = listOf(
@@ -39,7 +39,7 @@ class MovieRecommendationImpl(
 
         return try {
             val response = chatLanguageModel.generate(messages)
-            parseMovies(response.content().text());
+            parseMovies(response.content().text())
         } catch (e: Exception) {
             throw RuntimeException("Failed to generate movie recommendations: ${e.message}")
         }
@@ -49,7 +49,7 @@ class MovieRecommendationImpl(
         return try {
             println("Parsing JSON array from openAI: $movieJsonResponse")
 
-            // Clean up the response by removing markdown code block syntax
+            // Clean up the response by removing Markdown code block syntax
             val cleanJson = movieJsonResponse
                 .replace("```json", "")
                 .replace("```", "")

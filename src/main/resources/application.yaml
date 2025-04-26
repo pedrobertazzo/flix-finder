@@ -1,7 +1,11 @@
 spring:
   profiles:
     active: local
-
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/flixfinder}
+    username: flixuser
+    password: flixpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
 openai:
   apiKey: dummy
   model: gemini-2.0-flash-thinking-exp-01-21

@@ -1,4 +1,4 @@
-package com.flixfinder.service.api
+package com.flixfinder.service
 
 import com.flixfinder.model.Movie
 
