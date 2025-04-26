@@ -26,6 +26,5 @@ class GlobalExceptionHandler {
             "details" to "An invalid value was provided for a field of type: ${ex.targetType.simpleName}"
         )
         return ResponseEntity(response, HttpStatus.BAD_REQUEST)
-
     }
 }

@@ -1,0 +1,5 @@
+package com.flixfinder.model
+
+enum class Genre {
+    HORROR, ROMANCE, COMEDY, ACTION, THRILLER, DRAMA, MYSTERY, FANTASY, SCIENCE_FICTION, ADVENTURE
+}
