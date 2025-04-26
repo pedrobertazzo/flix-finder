@@ -1,5 +1,7 @@
 package com.flixfinder.service.api
 
+import com.flixfinder.model.Movie
+
 interface MovieRecommendationService {
-    fun getMovieRecommendation(preferences: String, genres: List<String>): String
+    fun getMovieRecommendation(preferences: String, genres: List<String>): List<Movie>
 }
