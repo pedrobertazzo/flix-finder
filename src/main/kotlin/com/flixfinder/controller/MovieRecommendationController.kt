@@ -2,9 +2,12 @@ package com.flixfinder.controller
 
 import com.flixfinder.model.RecommendationRequest
 import com.flixfinder.model.RecommendationResponse
-import com.flixfinder.service.api.MovieRecommendationService
+import com.flixfinder.service.MovieRecommendationService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/movies")
