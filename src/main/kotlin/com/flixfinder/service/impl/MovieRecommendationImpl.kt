@@ -13,7 +13,7 @@ class MovieRecommendationImpl(
     private val chatLanguageModel: ChatLanguageModel
 ) : MovieRecommendationService {
 
-    override fun getMovieRecommendation(preferences: String, genres: List<String>): List<Movie> {
+    override fun getMovieRecommendations(preferences: String, genres: List<String>, userId: Long?): List<Movie> {
         val prompt = """
             You are a movie recommendation assistant, suggest 3-5 movies based on the following user query:
             "$preferences"
@@ -28,6 +28,8 @@ class MovieRecommendationImpl(
                 "genre": "Horror"
               }
             ]
+            
+            The possible genre values are: ${Genre.entries.joinToString(", ")}
             
             Provide nothing but this JSON array in your response.
             The movie must exist; in case there is nothing that matches the preferences and genre, return an empty JSON array.'
@@ -68,7 +70,7 @@ class MovieRecommendationImpl(
                 )
             }
         } catch (e: Exception) {
-            println("Invalid JSON format from openAI: $movieJsonResponse")
+            println("Invalid JSON format from openAI: $movieJsonResponse\n${e.message}")
             emptyList()
         }
     }

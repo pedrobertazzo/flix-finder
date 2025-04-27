@@ -13,7 +13,6 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "user")
 data class User(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
