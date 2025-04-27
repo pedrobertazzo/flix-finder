@@ -1,0 +1,71 @@
+package com.flixfinder.service.impl
+
+import com.flixfinder.model.Genre
+import com.flixfinder.model.Movie
+import com.flixfinder.model.dto.BacklogItem
+import com.flixfinder.model.dto.UserBacklogResponse
+import com.flixfinder.model.entity.User
+import com.flixfinder.model.entity.UserBacklog
+import com.flixfinder.repository.UserBacklogRepository
+import com.flixfinder.repository.UserRepository
+import com.flixfinder.service.UserBacklogService
+import org.springframework.stereotype.Service
+
+@Service
+class UserBacklogServiceImpl(
+    private val userBacklogRepository: UserBacklogRepository,
+    private val userRepository: UserRepository
+) : UserBacklogService {
+    override fun getBacklogItems(userId: Long): UserBacklogResponse {
+        if (userId <= 0) throw IllegalArgumentException("Invalid user ID: $userId")
+
+        val backlogItems = userBacklogRepository.findByUserId(userId)
+
+        return UserBacklogResponse(
+            userId = userId,
+            movies = backlogItems
+                .map { item ->
+                    BacklogItem(
+                        backlogItemId = item.id,
+                        movie = Movie(
+                            title = item.title,
+                            releaseYear = item.releaseYear ?: 0,
+                            description = item.description.orEmpty(),
+                            genre = parseGenreSafely(item.genre)
+                        )
+                    )
+                }
+        )
+    }
+
+    private fun parseGenreSafely(genreString: String?): Genre {
+        if (genreString == null) return Genre.UNKNOWN
+        return try {
+            Genre.valueOf(genreString.uppercase())
+        } catch (e: IllegalArgumentException) {
+            Genre.UNKNOWN
+        }
+    }
+
+    override fun addBacklogItems(userId: Long, movies: List<Movie>) {
+        saveRecommendationsToBacklog(userId, movies)
+    }
+
+    override fun removeBacklogItems(userId: Long, backlogItemIds: List<Long>) {
+        val backlogItems = userBacklogRepository.findByUserId(userId)
+        val itemsToRemove = backlogItems.filter { backlogItemIds.contains(it.id) }
+        userBacklogRepository.deleteAll(itemsToRemove)
+    }
+
+    private fun saveRecommendationsToBacklog(userId: Long, movies: List<Movie>) {
+        val user = userRepository.findById(userId)
+        if (user.isEmpty) throw IllegalArgumentException("Invalid user ID: $userId")
+        val backlogItems = movies.map { createBacklogItem(user.get(), it) }
+        userBacklogRepository.saveAll(backlogItems)
+    }
+
+    private fun createBacklogItem(user: User, movie: Movie):
+        UserBacklog {
+            return UserBacklog(user, movie)
+    }
+}

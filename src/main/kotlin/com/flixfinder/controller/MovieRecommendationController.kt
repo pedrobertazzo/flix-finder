@@ -16,7 +16,11 @@ class MovieRecommendationController(
 ) {
     @PostMapping("/recommend")
     fun getRecommendations(@RequestBody request: RecommendationRequest): ResponseEntity<RecommendationResponse> {
-        val recommendations = movieRecommendationService.getMovieRecommendation(request.userPreferences, request.genres.map { it.name })
+        val recommendations = movieRecommendationService.getMovieRecommendations(
+            request.userPreferences,
+            request.genres.map { it.name },
+            request.userId
+        )
 
         return ResponseEntity.ok().body(RecommendationResponse(recommendations))
     }

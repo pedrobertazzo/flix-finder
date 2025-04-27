@@ -1,5 +1,6 @@
 package com.flixfinder.model.entity
 
+import com.flixfinder.model.Movie
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -15,7 +16,7 @@ import java.time.LocalDateTime
 data class UserBacklog(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -30,4 +31,14 @@ data class UserBacklog(
     val description: String? = null,
 
     val addedAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    constructor(user: User, movie: Movie) : this(
+        id = null,
+        user = user,
+        title = movie.title,
+        genre = movie.genre.toString(),
+        releaseYear = movie.releaseYear,
+        description = movie.description
+    )
+
+}
