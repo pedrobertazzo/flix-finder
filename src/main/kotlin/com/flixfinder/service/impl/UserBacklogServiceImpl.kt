@@ -66,6 +66,6 @@ class UserBacklogServiceImpl(
 
     private fun createBacklogItem(user: User, movie: Movie):
         UserBacklog {
-            return UserBacklog(user, movie)
+        return UserBacklog(user, movie)
     }
 }

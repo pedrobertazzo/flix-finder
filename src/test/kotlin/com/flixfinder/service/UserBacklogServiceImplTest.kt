@@ -8,8 +8,12 @@ import com.flixfinder.model.entity.User
 import com.flixfinder.model.entity.UserBacklog
 import com.flixfinder.repository.UserBacklogRepository
 import com.flixfinder.repository.UserRepository
-import io.mockk.*
-import org.junit.jupiter.api.Assertions.*
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
+import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -106,9 +110,9 @@ class UserBacklogServiceImplTest {
         )
         val user = User(id = userId, createdAt = LocalDateTime.now())
         val backlogItems = movies.map {
-                UserBacklog(
-                    user = user,
-                    Movie(
+            UserBacklog(
+                user = user,
+                Movie(
                     title = it.title,
                     description = it.description,
                     releaseYear = it.releaseYear,
