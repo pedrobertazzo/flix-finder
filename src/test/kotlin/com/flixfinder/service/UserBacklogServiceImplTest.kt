@@ -1,0 +1,183 @@
+package com.flixfinder.service.impl
+
+import com.flixfinder.model.Genre
+import com.flixfinder.model.Movie
+import com.flixfinder.model.dto.BacklogItem
+import com.flixfinder.model.dto.UserBacklogResponse
+import com.flixfinder.model.entity.User
+import com.flixfinder.model.entity.UserBacklog
+import com.flixfinder.repository.UserBacklogRepository
+import com.flixfinder.repository.UserRepository
+import io.mockk.*
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
+import java.util.*
+
+class UserBacklogServiceImplTest {
+
+    private lateinit var userBacklogRepository: UserBacklogRepository
+    private lateinit var userRepository: UserRepository
+    private lateinit var userBacklogService: UserBacklogServiceImpl
+
+    @BeforeEach
+    fun setup() {
+        userBacklogRepository = mockk()
+        userRepository = mockk()
+        userBacklogService = UserBacklogServiceImpl(userBacklogRepository, userRepository)
+    }
+
+    @Test
+    fun `getBacklogItems returns user backlog response`() {
+        // Given
+        val userId = 1L
+        val backlogItems = listOf(
+            UserBacklog(
+                id = 1L,
+                user = User(id = userId, createdAt = LocalDateTime.now()),
+                title = "Movie 1",
+                description = "Description 1",
+                releaseYear = 2023,
+                genre = "ACTION"
+            ),
+            UserBacklog(
+                id = 2L,
+                user = User(id = userId, createdAt = LocalDateTime.now()),
+                title = "Movie 2",
+                description = "Description 2",
+                releaseYear = 2025,
+                genre = "SCI_FI"
+            )
+        )
+
+        val expectedResponse = UserBacklogResponse(
+            userId = userId,
+            movies = backlogItems.map { item ->
+                BacklogItem(
+                    backlogItemId = item.id,
+                    movie = Movie(
+                        title = item.title,
+                        releaseYear = item.releaseYear ?: 0,
+                        description = item.description.orEmpty(),
+                        genre = Genre.valueOf(item.genre ?: "UNKNOWN")
+                    )
+                )
+            }
+        )
+
+        every { userBacklogRepository.findByUserId(userId) } returns backlogItems
+
+        // When
+        val result = userBacklogService.getBacklogItems(userId)
+
+        // Then
+        assertEquals(expectedResponse.userId, result.userId)
+        assertEquals(expectedResponse.movies.size, result.movies.size)
+        verify(exactly = 1) { userBacklogRepository.findByUserId(userId) }
+    }
+
+    @Test
+    fun `getBacklogItems throws exception for invalid userId`() {
+        // Given
+        val userId = -1L
+
+        // When/Then
+        val exception = assertThrows<IllegalArgumentException> {
+            userBacklogService.getBacklogItems(userId)
+        }
+
+        assertEquals("Invalid user ID: $userId", exception.message)
+        verify(exactly = 0) { userBacklogRepository.findByUserId(any()) }
+    }
+
+    @Test
+    fun `addBacklogItems saves movies to backlog`() {
+        // Given
+        val userId = 1L
+        val movies = listOf(
+            Movie(
+                title = "Inception",
+                releaseYear = 2010,
+                description = "A thief who steals corporate secrets through dream-sharing technology",
+                genre = Genre.SCI_FI
+            )
+        )
+        val user = User(id = userId, createdAt = LocalDateTime.now())
+        val backlogItems = movies.map {
+                UserBacklog(
+                    user = user,
+                    Movie(
+                    title = it.title,
+                    description = it.description,
+                    releaseYear = it.releaseYear,
+                    genre = it.genre
+                )
+            )
+        }
+
+        every { userRepository.findById(userId) } returns Optional.of(user)
+        every { userBacklogRepository.saveAll(any<List<UserBacklog>>()) } returns backlogItems
+
+        // When
+        userBacklogService.addBacklogItems(userId, movies)
+
+        // Then
+        verify(exactly = 1) { userRepository.findById(userId) }
+        verify(exactly = 1) { userBacklogRepository.saveAll(any<List<UserBacklog>>()) }
+    }
+
+    @Test
+    fun `addBacklogItems throws exception when user does not exist`() {
+        // Given
+        val userId = 1L
+        val movies = listOf(
+            Movie(
+                title = "Inception",
+                releaseYear = 2010,
+                description = "A thief who steals corporate secrets through dream-sharing technology",
+                genre = Genre.SCI_FI
+            )
+        )
+
+        every { userRepository.findById(userId) } returns Optional.empty()
+
+        // When/Then
+        val exception = assertThrows<IllegalArgumentException> {
+            userBacklogService.addBacklogItems(userId, movies)
+        }
+
+        assertEquals("Invalid user ID: $userId", exception.message)
+        verify(exactly = 1) { userRepository.findById(userId) }
+        verify(exactly = 0) { userBacklogRepository.saveAll(any<List<UserBacklog>>()) }
+    }
+
+    @Test
+    fun `removeBacklogItems removes items by ids`() {
+        // Given
+        val userId = 1L
+        val backlogItemIds = listOf(1L, 2L)
+        val user = User(id = userId, createdAt = LocalDateTime.now())
+        val backlogItems = backlogItemIds.map {
+            UserBacklog(
+                id = it,
+                user = user,
+                title = "Movie $it",
+                description = "Description $it",
+                releaseYear = 2020,
+                genre = "ACTION"
+            )
+        }
+
+        every { userBacklogRepository.findByUserId(userId) } returns backlogItems
+        every { userBacklogRepository.deleteAll(any<List<UserBacklog>>()) } just runs
+
+        // When
+        userBacklogService.removeBacklogItems(userId, backlogItemIds)
+
+        // Then
+        verify(exactly = 1) { userBacklogRepository.findByUserId(userId) }
+        verify(exactly = 1) { userBacklogRepository.deleteAll(any<List<UserBacklog>>()) }
+    }
+}

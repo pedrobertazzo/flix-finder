@@ -40,5 +40,4 @@ data class UserBacklog(
         releaseYear = movie.releaseYear,
         description = movie.description
     )
-
 }
