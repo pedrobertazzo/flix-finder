@@ -19,6 +19,12 @@ class ClientConfig {
     @Value("\${openai.model}")
     private lateinit var openAiModel: String
 
+    @Value("\${tmdb.apiKey}")
+    private lateinit var tmdbApiKey: String
+
+    @Value("\${tmdb.baseUrl}")
+    private lateinit var tmdbBaseUrl: String
+
     @Bean
     fun webClient(): WebClient.Builder {
         return WebClient.builder()
@@ -31,6 +37,14 @@ class ClientConfig {
             .apiKey(openAiApiKey)
             .modelName(openAiModel)
             .temperature(1.0)
+            .build()
+    }
+
+    @Bean
+    fun tmdbWebClient(webClientBuilder: WebClient.Builder): WebClient {
+        return webClientBuilder
+            .baseUrl(tmdbBaseUrl)
+            .defaultHeader("Authorization", "Bearer $tmdbApiKey")
             .build()
     }
 }

@@ -1,0 +1,9 @@
+openai:
+  apiKey: your_api_key
+  model: gemini-2.0-flash-thinking-exp-01-21
+  baseUrl: https://generativelanguage.googleapis.com/v1beta/
+
+
+tmdb:
+  apiKey: your_api_key
+  baseUrl: https://api.themoviedb.org/3

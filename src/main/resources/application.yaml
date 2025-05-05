@@ -6,10 +6,15 @@ spring:
     username: flixuser
     password: flixpassword
     driver-class-name: com.mysql.cj.jdbc.Driver
+
 openai:
-  apiKey: dummy
+  apiKey: apiKey
   model: gemini-2.0-flash-thinking-exp-01-21
   baseUrl: https://generativelanguage.googleapis.com/v1beta/
+
+tmdb:
+  apiKey: apiKey
+  baseUrl: https://api.themoviedb.org/3
 
 server:
   port: 8080

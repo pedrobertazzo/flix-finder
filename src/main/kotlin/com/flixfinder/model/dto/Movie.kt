@@ -4,5 +4,6 @@ data class Movie(
     val title: String,
     val releaseYear: Int,
     val description: String,
-    val genre: Genre
+    val genre: Genre,
+    val imageUrl: String? = null
 )
