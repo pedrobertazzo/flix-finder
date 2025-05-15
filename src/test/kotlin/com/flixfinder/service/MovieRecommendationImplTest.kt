@@ -41,11 +41,7 @@ class MovieRecommendationImplTest {
         every { webClient.get() } returns webClientBuilder
         every { webClientBuilder.uri(any<Function<UriBuilder, URI>>()) } returns webClientUri
         every { webClientUri.retrieve() } returns responseSpec
-
-        // Add this line to mock the onStatus method
         every { responseSpec.onStatus(any(), any()) } returns responseSpec
-
-        // Keep this line to mock bodyToMono
         every { responseSpec.bodyToMono(String::class.java) } returns Mono.empty()
 
         movieRecommendationImpl = MovieRecommendationImpl(chatLanguageModel, webClient)
@@ -79,8 +75,7 @@ class MovieRecommendationImplTest {
         // When
         val preferences = "I like thoughtful movies with good plots"
         val genres = listOf("DRAMA", "ACTION")
-        val userId = 1L
-        val recommendations = movieRecommendationImpl.getMovieRecommendations(preferences, genres, userId)
+        val recommendations = movieRecommendationImpl.getMovieRecommendations(preferences, genres)
 
         // Then
         assertEquals(2, recommendations.size)
@@ -108,8 +103,7 @@ class MovieRecommendationImplTest {
         // When
         val recommendations = movieRecommendationImpl.getMovieRecommendations(
             "Some very specific preferences that won't match anything",
-            listOf("DOCUMENTARY"),
-            1L
+            listOf("DOCUMENTARY")
         )
 
         // Then
@@ -130,8 +124,7 @@ class MovieRecommendationImplTest {
         // When
         val recommendations = movieRecommendationImpl.getMovieRecommendations(
             "Dreams and mind-bending reality",
-            listOf("SCI_FI"),
-            1L
+            listOf("SCI_FI")
         )
 
         // Then
@@ -150,8 +143,7 @@ class MovieRecommendationImplTest {
         // When
         val recommendations = movieRecommendationImpl.getMovieRecommendations(
             "Any preferences",
-            listOf("COMEDY"),
-            1L
+            listOf("COMEDY")
         )
 
         // Then
@@ -170,8 +162,7 @@ class MovieRecommendationImplTest {
             runBlocking {
                 movieRecommendationImpl.getMovieRecommendations(
                     "Any preferences",
-                    listOf("COMEDY"),
-                    1L
+                    listOf("COMEDY")
                 )
             }
         }
@@ -213,8 +204,7 @@ class MovieRecommendationImplTest {
         // When
         val recommendations = movieRecommendationImpl.getMovieRecommendations(
             "Dreams and mind-bending reality",
-            listOf("SCI_FI"),
-            1L
+            listOf("SCI_FI")
         )
 
         // Then

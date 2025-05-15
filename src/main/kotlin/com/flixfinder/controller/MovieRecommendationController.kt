@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController
 class MovieRecommendationController(
     private val movieRecommendationService: MovieRecommendationService
 ) {
-    @PostMapping("/recommend")
+    @PostMapping("/recommendations")
     suspend fun getRecommendations(@RequestBody request: RecommendationRequest): ResponseEntity<RecommendationResponse> {
         val recommendations = movieRecommendationService.getMovieRecommendations(
             request.userPreferences,
-            request.genres.map { it.name },
-            request.userId
+            request.genres.map { it.name }
         )
 
         return ResponseEntity.ok().body(RecommendationResponse(recommendations))

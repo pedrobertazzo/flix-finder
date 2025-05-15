@@ -19,8 +19,7 @@ class MovieRecommendationImpl(
 
     override suspend fun getMovieRecommendations(
         preferences: String,
-        genres: List<String>,
-        userId: Long?
+        genres: List<String>
     ): List<Movie> {
         val prompt = """
         You are a movie recommendation assistant, suggest 3-5 movies based on the following user query:
@@ -103,7 +102,7 @@ class MovieRecommendationImpl(
                 }
             }
             .bodyToMono(String::class.java)
-            .map { json ->
+            .mapNotNull { json ->
                 val jsonResponse = JsonParser.parseString(json).asJsonObject
                 val results = jsonResponse.getAsJsonArray("results")
                 val firstResult = results?.firstOrNull()?.asJsonObject

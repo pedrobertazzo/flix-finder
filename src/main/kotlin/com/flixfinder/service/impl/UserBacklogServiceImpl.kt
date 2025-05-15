@@ -51,10 +51,15 @@ class UserBacklogServiceImpl(
         saveRecommendationsToBacklog(userId, movies)
     }
 
-    override fun removeBacklogItems(userId: Long, backlogItemIds: List<Long>) {
+    override fun removeBacklogItem(userId: Long, backlogItemId: Long) {
         val backlogItems = userBacklogRepository.findByUserId(userId)
-        val itemsToRemove = backlogItems.filter { backlogItemIds.contains(it.id) }
-        userBacklogRepository.deleteAll(itemsToRemove)
+        val itemToRemove = backlogItems.find { it.id == backlogItemId }
+
+        if (itemToRemove != null) {
+            userBacklogRepository.delete(itemToRemove)
+        } else {
+            throw IllegalArgumentException("Backlog item with ID $backlogItemId not found for user $userId.")
+        }
     }
 
     private fun saveRecommendationsToBacklog(userId: Long, movies: List<Movie>) {

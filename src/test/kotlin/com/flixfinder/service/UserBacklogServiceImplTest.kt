@@ -161,27 +161,24 @@ class UserBacklogServiceImplTest {
     fun `removeBacklogItems removes items by ids`() {
         // Given
         val userId = 1L
-        val backlogItemIds = listOf(1L, 2L)
         val user = User(id = userId, createdAt = LocalDateTime.now())
-        val backlogItems = backlogItemIds.map {
-            UserBacklog(
-                id = it,
-                user = user,
-                title = "Movie $it",
-                description = "Description $it",
-                releaseYear = 2020,
-                genre = "ACTION"
-            )
-        }
+        val backlogItem = UserBacklog(
+            id = 10L,
+            user = user,
+            title = "Movie title",
+            description = "Description",
+            releaseYear = 2020,
+            genre = "ACTION"
+        )
 
-        every { userBacklogRepository.findByUserId(userId) } returns backlogItems
-        every { userBacklogRepository.deleteAll(any<List<UserBacklog>>()) } just runs
+        every { userBacklogRepository.findByUserId(userId) } returns listOf(backlogItem)
+        every { userBacklogRepository.delete(backlogItem) } just runs
 
         // When
-        userBacklogService.removeBacklogItems(userId, backlogItemIds)
+        userBacklogService.removeBacklogItem(userId, 10L)
 
         // Then
         verify(exactly = 1) { userBacklogRepository.findByUserId(userId) }
-        verify(exactly = 1) { userBacklogRepository.deleteAll(any<List<UserBacklog>>()) }
+        verify(exactly = 1) { userBacklogRepository.delete(backlogItem) }
     }
 }

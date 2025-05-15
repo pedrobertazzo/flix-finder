@@ -34,16 +34,15 @@ langchain:
 The application will be available at `http://localhost:8080`
 ## 🔍 API Endpoints
 ### Movie Recommendations
-- `GET /api/recommendations`: Get personalized movie recommendations
+- `GET /api/movies/recommendations`: Get personalized movie recommendations
     - Query parameters:
         - `preferences`: User's movie preferences in natural language
         - `genres`: Optional genres to filter by
-        - `userId`: User identifier for personalization
 
 ### User Backlog
 - `GET /api/backlog/{userId}`: Get the user's saved movie backlog
 - `POST /api/backlog/{userId}/add`: Add a movie to the user's backlog
-- `DELETE /api/backlog/{userId}/remove/{movieId}`: Remove a movie from the backlog
+- `DELETE /api/backlog/{userId}/item/{backlogItemId}`: Remove an item from the backlog
 
 ## 🧪 Testing
 ``` bash
