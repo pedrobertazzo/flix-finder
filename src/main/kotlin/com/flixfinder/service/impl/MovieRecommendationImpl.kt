@@ -22,7 +22,7 @@ class MovieRecommendationImpl(
         genres: List<String>
     ): List<Movie> {
         val prompt = """
-        You are a movie recommendation assistant, suggest 3-5 movies based on the following user query:
+        You are a movie recommendation assistant, suggest a max of 6 movies based on the following user query:
         "$preferences"
         For the following genres: ${genres.joinToString(", ")}
 
@@ -40,6 +40,7 @@ class MovieRecommendationImpl(
 
         Provide nothing but this JSON array in your response.
         The movie must exist; in case there is nothing that matches the preferences and genre, return an empty JSON array.
+        When discussing the best or worst movies, take into consideration the ratings from professional critics.
         """.trimIndent()
 
         val messages = listOf(UserMessage(prompt))
