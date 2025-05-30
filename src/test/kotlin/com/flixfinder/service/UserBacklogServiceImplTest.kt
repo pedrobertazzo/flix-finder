@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDateTime
 import java.util.*
 
 class UserBacklogServiceImplTest {
@@ -40,7 +39,7 @@ class UserBacklogServiceImplTest {
         val backlogItems = listOf(
             UserBacklog(
                 id = 1L,
-                user = User(id = userId, createdAt = LocalDateTime.now()),
+                user = User(id = userId, username = "user1", email = "user1@example.com"),
                 title = "Movie 1",
                 description = "Description 1",
                 releaseYear = 2023,
@@ -48,7 +47,7 @@ class UserBacklogServiceImplTest {
             ),
             UserBacklog(
                 id = 2L,
-                user = User(id = userId, createdAt = LocalDateTime.now()),
+                user = User(id = userId, username = "user1", email = "user1@example.com"),
                 title = "Movie 2",
                 description = "Description 2",
                 releaseYear = 2025,
@@ -108,7 +107,7 @@ class UserBacklogServiceImplTest {
                 genre = Genre.SCIENCE_FICTION
             )
         )
-        val user = User(id = userId, createdAt = LocalDateTime.now())
+        val user = User(id = userId, username = "user1", email = "user1@example.com")
         val backlogItems = movies.map {
             UserBacklog(
                 user = user,
@@ -161,7 +160,7 @@ class UserBacklogServiceImplTest {
     fun `removeBacklogItems removes items by ids`() {
         // Given
         val userId = 1L
-        val user = User(id = userId, createdAt = LocalDateTime.now())
+        val user = User(id = userId, username = "user1", email = "user1@example.com")
         val backlogItem = UserBacklog(
             id = 10L,
             user = user,

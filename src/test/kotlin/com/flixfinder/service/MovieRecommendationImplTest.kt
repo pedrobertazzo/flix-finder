@@ -133,20 +133,23 @@ class MovieRecommendationImplTest {
     }
 
     @Test
-    fun `getMovieRecommendations returns empty list when API returns invalid JSON`() = runBlocking {
+    fun `getMovieRecommendations throws exception when API returns invalid JSON`() = runBlocking {
         // Given
         every {
             chatLanguageModel.generate(any<List<ChatMessage>>())
         } returns Response(AiMessage("This is not a JSON response"))
 
-        // When
-        val recommendations = movieRecommendationImpl.getMovieRecommendations(
-            "Any preferences",
-            listOf("COMEDY")
-        )
+        // When/Then
+        val exception = assertThrows(RuntimeException::class.java) {
+            runBlocking {
+                movieRecommendationImpl.getMovieRecommendations(
+                    "Any preferences",
+                    listOf("COMEDY")
+                )
+            }
+        }
 
-        // Then
-        assertTrue(recommendations.isEmpty())
+        assertTrue(exception.message!!.contains("Failed to generate movie recommendations after 3 attempts"))
     }
 
     @Test
