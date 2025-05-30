@@ -65,12 +65,7 @@ class UserBacklogServiceImpl(
     private fun saveRecommendationsToBacklog(userId: Long, movies: List<Movie>) {
         val user = userRepository.findById(userId)
         if (user.isEmpty) throw IllegalArgumentException("Invalid user ID: $userId")
-        val backlogItems = movies.map { createBacklogItem(user.get(), it) }
+        val backlogItems = movies.map { UserBacklog(user.get(), it) }
         userBacklogRepository.saveAll(backlogItems)
-    }
-
-    private fun createBacklogItem(user: User, movie: Movie):
-        UserBacklog {
-        return UserBacklog(user, movie)
     }
 }

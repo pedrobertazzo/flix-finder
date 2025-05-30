@@ -8,10 +8,10 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "users")
-data class User(
+data class User @JvmOverloads constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val username: String,
-    val email: String
+    val username: String = "",
+    val email: String = ""
 )
