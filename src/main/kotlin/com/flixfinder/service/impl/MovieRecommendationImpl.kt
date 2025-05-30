@@ -22,8 +22,9 @@ class MovieRecommendationImpl(
         preferences: String,
         genres: List<String>
     ): List<ComposedMovie> {
+        var retryCount = 3
         val prompt = """
-        You are a movie recommendation assistant, suggest a max of 6 movies based on the following user query:
+        You are a movie recommendation assistant, suggest a max of 12 movies based on the following user query:
         "$preferences"
         For the following genres: ${genres.joinToString(", ")}
 
@@ -39,40 +40,48 @@ class MovieRecommendationImpl(
 
         The possible genre values are: ${Genre.entries.joinToString(", ")}
 
-        Provide nothing but this JSON array in your response.
+        Provide nothing but this JSON array in your response. Never add any other text or comments.
         The movie must exist; in case there is nothing that matches the preferences and genre, return an empty JSON array.
         When discussing the best or worst movies, take into consideration the ratings from professional critics.
         """.trimIndent()
 
         val messages = listOf(UserMessage(prompt))
 
-        return try {
-            val response = chatLanguageModel.generate(messages)
-            val movies = parseMovies(response.content().text())
+        while (retryCount > 0) {
+            try {
+                val response = chatLanguageModel.generate(messages)
+                val movies = parseMovies(response.content().text())
 
-            movies.map { movie ->
-                val imageUrl = fetchMoviePosterUrl(movie.title, movie.releaseYear)
-                    .awaitFirstOrNull() // Await the result of Mono<String?>
-                ComposedMovie(movie, imageUrl)
+                return movies.map { movie ->
+                    val imageUrl = fetchMoviePosterUrl(movie.title, movie.releaseYear)
+                        .awaitFirstOrNull()
+                    ComposedMovie(movie, imageUrl)
+                }
+            } catch (e: Exception) {
+                retryCount--
+                if (retryCount > 0) {
+                    println("Error occurred, retrying (${3 - retryCount}/3): ${e.message}")
+                } else {
+                    throw RuntimeException("Failed to generate movie recommendations after 3 attempts: ${e.message}")
+                }
             }
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to generate movie recommendations: ${e.message}")
         }
+        throw RuntimeException("Failed to generate movie recommendations")
     }
 
     private fun parseMovies(movieJsonResponse: String): List<Movie> {
-        return try {
-            println("Parsing JSON array from openAI: $movieJsonResponse")
+        println("Parsing JSON array from openAI: $movieJsonResponse")
 
-            // Clean up the response by removing Markdown code block syntax
-            val cleanJson = movieJsonResponse
-                .replace("```json", "")
-                .replace("```", "")
-                .trim()
+        // Clean up the response by removing Markdown code block syntax
+        val cleanJson = movieJsonResponse
+            .replace("```json", "")
+            .replace("```", "")
+            .trim()
 
+        try {
             val jsonArray = JsonParser.parseString(cleanJson).asJsonArray
 
-            jsonArray.map { jsonElement ->
+            return jsonArray.map { jsonElement ->
                 val obj = jsonElement.asJsonObject
                 val genreString = obj.get("genre").asString
                 Movie(
@@ -84,7 +93,7 @@ class MovieRecommendationImpl(
             }
         } catch (e: Exception) {
             println("Invalid JSON format from openAI: $movieJsonResponse\n${e.message}")
-            emptyList()
+            throw RuntimeException("Failed to parse movie recommendations: ${e.message}")
         }
     }
 
