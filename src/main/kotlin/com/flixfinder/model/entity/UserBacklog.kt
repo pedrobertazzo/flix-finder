@@ -1,6 +1,6 @@
 package com.flixfinder.model.entity
 
-import com.flixfinder.model.Movie
+import com.flixfinder.model.dto.Movie
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue

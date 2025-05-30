@@ -1,8 +1,8 @@
 package com.flixfinder.service.impl
 
-import com.flixfinder.model.Genre
-import com.flixfinder.model.Movie
 import com.flixfinder.model.dto.BacklogItem
+import com.flixfinder.model.dto.Genre
+import com.flixfinder.model.dto.Movie
 import com.flixfinder.model.dto.UserBacklogResponse
 import com.flixfinder.model.entity.User
 import com.flixfinder.model.entity.UserBacklog

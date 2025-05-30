@@ -1,6 +1,6 @@
 package com.flixfinder.service
 
-import com.flixfinder.model.Genre
+import com.flixfinder.model.dto.Genre
 import com.flixfinder.service.impl.MovieRecommendationImpl
 import dev.langchain4j.data.message.AiMessage
 import dev.langchain4j.data.message.ChatMessage
@@ -67,7 +67,6 @@ class MovieRecommendationImplTest {
         ]
         """.trimIndent()
 
-        // Mock the model response without capturing the prompt
         every {
             chatLanguageModel.generate(any<List<ChatMessage>>())
         } returns Response(AiMessage("```json\n$jsonResponse\n```"))
@@ -81,16 +80,16 @@ class MovieRecommendationImplTest {
         assertEquals(2, recommendations.size)
 
         // Verify first movie
-        assertEquals("The Shawshank Redemption", recommendations[0].title)
-        assertEquals(1994, recommendations[0].releaseYear)
-        assertEquals("Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.", recommendations[0].description)
-        assertEquals(Genre.DRAMA, recommendations[0].genre)
+        assertEquals("The Shawshank Redemption", recommendations[0].movie.title)
+        assertEquals(1994, recommendations[0].movie.releaseYear)
+        assertEquals("Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.", recommendations[0].movie.description)
+        assertEquals(Genre.DRAMA, recommendations[0].movie.genre)
 
         // Verify second movie
-        assertEquals("The Dark Knight", recommendations[1].title)
-        assertEquals(2008, recommendations[1].releaseYear)
-        assertEquals("When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.", recommendations[1].description)
-        assertEquals(Genre.ACTION, recommendations[1].genre)
+        assertEquals("The Dark Knight", recommendations[1].movie.title)
+        assertEquals(2008, recommendations[1].movie.releaseYear)
+        assertEquals("When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.", recommendations[1].movie.description)
+        assertEquals(Genre.ACTION, recommendations[1].movie.genre)
     }
 
     @Test
@@ -114,7 +113,7 @@ class MovieRecommendationImplTest {
     fun `getMovieRecommendations handles JSON without Markdown code blocks`() = runBlocking {
         // Given
         val jsonResponse = """
-            [{"title":"Inception","releaseYear":2010,"description":"A thief who steals corporate secrets through the use of dream-sharing technology.","genre":"SCI_FI"}]
+            [{"title":"Inception","releaseYear":2010,"description":"A thief who steals corporate secrets through the use of dream-sharing technology.","genre":"SCIENCE_FICTION"}]
         """.trimIndent()
 
         every {
@@ -124,13 +123,13 @@ class MovieRecommendationImplTest {
         // When
         val recommendations = movieRecommendationImpl.getMovieRecommendations(
             "Dreams and mind-bending reality",
-            listOf("SCI_FI")
+            listOf("SCIENCE_FICTION")
         )
 
         // Then
         assertEquals(1, recommendations.size)
-        assertEquals("Inception", recommendations[0].title)
-        assertEquals(Genre.SCI_FI, recommendations[0].genre)
+        assertEquals("Inception", recommendations[0].movie.title)
+        assertEquals(Genre.SCIENCE_FICTION, recommendations[0].movie.genre)
     }
 
     @Test
@@ -174,7 +173,7 @@ class MovieRecommendationImplTest {
     fun `getMovieRecommendations includes poster URLs when available`() = runBlocking {
         // Given
         val jsonResponse = """
-        [{"title":"Inception","releaseYear":2010,"description":"A thief who steals corporate secrets through the use of dream-sharing technology.","genre":"SCI_FI"}]
+        [{"title":"Inception","releaseYear":2010,"description":"A thief who steals corporate secrets through the use of dream-sharing technology.","genre":"SCIENCE_FICTION"}]
         """.trimIndent()
 
         val tmdbResponse = """
@@ -197,20 +196,19 @@ class MovieRecommendationImplTest {
         val monoMock = Mono.just(tmdbResponse)
 
         every { webClientUri.retrieve() } returns retrieveMock
-        // Add onStatus mocking
         every { retrieveMock.onStatus(any(), any()) } returns retrieveMock
         every { retrieveMock.bodyToMono(String::class.java) } returns monoMock
 
         // When
         val recommendations = movieRecommendationImpl.getMovieRecommendations(
             "Dreams and mind-bending reality",
-            listOf("SCI_FI")
+            listOf("SCIENCE_FICTION")
         )
 
         // Then
         assertEquals(1, recommendations.size)
-        assertEquals("Inception", recommendations[0].title)
-        assertEquals(Genre.SCI_FI, recommendations[0].genre)
+        assertEquals("Inception", recommendations[0].movie.title)
+        assertEquals(Genre.SCIENCE_FICTION, recommendations[0].movie.genre)
         assertEquals("https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", recommendations[0].imageUrl)
     }
 }

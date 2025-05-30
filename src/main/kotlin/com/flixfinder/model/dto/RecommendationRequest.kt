@@ -1,4 +1,4 @@
-package com.flixfinder.model
+package com.flixfinder.model.dto
 
 data class RecommendationRequest(
     val userPreferences: String,

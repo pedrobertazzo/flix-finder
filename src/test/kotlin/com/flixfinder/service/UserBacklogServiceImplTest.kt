@@ -1,8 +1,8 @@
 package com.flixfinder.service.impl
 
-import com.flixfinder.model.Genre
-import com.flixfinder.model.Movie
 import com.flixfinder.model.dto.BacklogItem
+import com.flixfinder.model.dto.Genre
+import com.flixfinder.model.dto.Movie
 import com.flixfinder.model.dto.UserBacklogResponse
 import com.flixfinder.model.entity.User
 import com.flixfinder.model.entity.UserBacklog
@@ -52,7 +52,7 @@ class UserBacklogServiceImplTest {
                 title = "Movie 2",
                 description = "Description 2",
                 releaseYear = 2025,
-                genre = "SCI_FI"
+                genre = "SCIENCE_FICTION"
             )
         )
 
@@ -105,7 +105,7 @@ class UserBacklogServiceImplTest {
                 title = "Inception",
                 releaseYear = 2010,
                 description = "A thief who steals corporate secrets through dream-sharing technology",
-                genre = Genre.SCI_FI
+                genre = Genre.SCIENCE_FICTION
             )
         )
         val user = User(id = userId, createdAt = LocalDateTime.now())
@@ -141,7 +141,7 @@ class UserBacklogServiceImplTest {
                 title = "Inception",
                 releaseYear = 2010,
                 description = "A thief who steals corporate secrets through dream-sharing technology",
-                genre = Genre.SCI_FI
+                genre = Genre.SCIENCE_FICTION
             )
         )
 

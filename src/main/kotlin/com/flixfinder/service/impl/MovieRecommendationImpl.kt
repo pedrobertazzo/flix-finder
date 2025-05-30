@@ -1,7 +1,8 @@
 package com.flixfinder.service.impl
 
-import com.flixfinder.model.Genre
-import com.flixfinder.model.Movie
+import com.flixfinder.model.dto.ComposedMovie
+import com.flixfinder.model.dto.Genre
+import com.flixfinder.model.dto.Movie
 import com.flixfinder.service.MovieRecommendationService
 import com.google.gson.JsonParser
 import dev.langchain4j.data.message.UserMessage
@@ -20,7 +21,7 @@ class MovieRecommendationImpl(
     override suspend fun getMovieRecommendations(
         preferences: String,
         genres: List<String>
-    ): List<Movie> {
+    ): List<ComposedMovie> {
         val prompt = """
         You are a movie recommendation assistant, suggest a max of 6 movies based on the following user query:
         "$preferences"
@@ -52,7 +53,7 @@ class MovieRecommendationImpl(
             movies.map { movie ->
                 val imageUrl = fetchMoviePosterUrl(movie.title, movie.releaseYear)
                     .awaitFirstOrNull() // Await the result of Mono<String?>
-                movie.copy(imageUrl = imageUrl)
+                ComposedMovie(movie, imageUrl)
             }
         } catch (e: Exception) {
             throw RuntimeException("Failed to generate movie recommendations: ${e.message}")
@@ -78,8 +79,7 @@ class MovieRecommendationImpl(
                     title = obj.get("title").asString,
                     releaseYear = obj.get("releaseYear").asInt,
                     description = obj.get("description").asString,
-                    genre = Genre.valueOf(genreString.uppercase()),
-                    imageUrl = null // Will be populated later
+                    genre = Genre.valueOf(genreString.uppercase())
                 )
             }
         } catch (e: Exception) {

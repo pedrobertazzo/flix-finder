@@ -20,6 +20,10 @@ java {
     }
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 test {
     useJUnitPlatform()
     testLogging {

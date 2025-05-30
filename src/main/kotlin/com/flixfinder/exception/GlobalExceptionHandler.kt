@@ -1,7 +1,7 @@
 package com.flixfinder.exception
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.flixfinder.model.Genre
+import com.flixfinder.model.dto.Genre
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice

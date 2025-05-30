@@ -1,5 +1,5 @@
-package com.flixfinder.model
+package com.flixfinder.model.dto
 
 data class RecommendationResponse(
-    val recommendations: List<Movie>
+    val recommendations: List<ComposedMovie>
 )

@@ -1,7 +1,7 @@
 package com.flixfinder.controller
 
-import com.flixfinder.model.RecommendationRequest
-import com.flixfinder.model.RecommendationResponse
+import com.flixfinder.model.dto.RecommendationRequest
+import com.flixfinder.model.dto.RecommendationResponse
 import com.flixfinder.service.MovieRecommendationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

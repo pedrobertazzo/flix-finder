@@ -1,6 +1,6 @@
 package com.flixfinder.service
 
-import com.flixfinder.model.Movie
+import com.flixfinder.model.dto.Movie
 import com.flixfinder.model.dto.UserBacklogResponse
 
 interface UserBacklogService {
